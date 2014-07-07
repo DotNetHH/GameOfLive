@@ -27,3 +27,9 @@ obj/
 [Rr]elease*/
 _ReSharper*/
 [Tt]est[Rr]esult*
+*.ncrunchsolution
+GameOfLife/GameOfLife.v2.ncrunchproject
+packages/NUnit.2.6.3/lib/nunit.framework.dll
+packages/NUnit.2.6.3/lib/nunit.framework.xml
+packages/NUnit.2.6.3/license.txt
+packages/NUnit.2.6.3/NUnit.2.6.3.nupkg
