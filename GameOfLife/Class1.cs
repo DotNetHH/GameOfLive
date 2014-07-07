@@ -1,19 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Security;
 using NUnit.Framework;
 
 namespace GameOfLife
 {
-
     public class Class1
     {
         [Test]
         public void JedelebendezelleMitWenigerAlszweiNachbarnStirbt()
         {
-            var startArray = new bool [,]
+            var startArray = new[,]
                              {
                                  {false, false, false, false, false, false, false, false},
                                  {false, false, false, false, true, false, false, false},
@@ -21,22 +17,22 @@ namespace GameOfLife
                                  {false, false, false, false, false, false, false, false}
                              };
 
-            var actualArray = schritt(startArray);
+            object actualArray = schritt(startArray);
 
-            var expectedArray = new bool[,]
-                             {
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false}
-                             };
+            var expectedArray = new[,]
+                                {
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false}
+                                };
             Assert.AreEqual(actualArray, expectedArray);
         }
 
         [Test]
         public void JedeEinzelneLebendeZelleStirbt()
         {
-            var startArray = new bool[,]
+            var startArray = new[,]
                              {
                                  {false, false, false, false, false, false, false, false},
                                  {false, false, false, true, false, false, false, false},
@@ -45,16 +41,16 @@ namespace GameOfLife
                              };
 
 
-            var actualArray = schritt(startArray);
+            object actualArray = schritt(startArray);
 
 
-            var expectedArray = new bool[,]
-                             {
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false}
-                             };
+            var expectedArray = new[,]
+                                {
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false}
+                                };
 
 
             Assert.AreEqual(actualArray, expectedArray);
@@ -63,7 +59,7 @@ namespace GameOfLife
         [Test]
         public void JedeEinzelneLebendeZelleStirbt2()
         {
-            var startArray = new bool[,]
+            var startArray = new[,]
                              {
                                  {true, true, false, true, false, false, false, false},
                                  {true, false, false, false, false, false, false, false},
@@ -71,14 +67,14 @@ namespace GameOfLife
                                  {false, false, false, false, false, false, false, false}
                              };
 
-            var expectedArray = new bool[,]
-                             {
-                                 {true, true, false, false, false, false, false, false},
-                                 {true, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false}
-                             };
-            var actualArray = schritt(startArray);
+            var expectedArray = new[,]
+                                {
+                                    {true, true, false, false, false, false, false, false},
+                                    {true, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false}
+                                };
+            object actualArray = schritt(startArray);
 
             Assert.AreEqual(actualArray, expectedArray);
         }
@@ -86,7 +82,7 @@ namespace GameOfLife
         [Test]
         public void JedeEinzelneLebendeZelleStirbt3()
         {
-            var startArray = new bool[,]
+            var startArray = new[,]
                              {
                                  {true, false, false, false, false, false, false, false},
                                  {false, false, false, false, false, false, false, false},
@@ -94,53 +90,69 @@ namespace GameOfLife
                                  {false, false, false, false, false, false, false, false}
                              };
 
-            var expectedArray = new bool[,]
-                             {
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false}
-                             };
-            var actualArray = schritt(startArray);
+            var expectedArray = new[,]
+                                {
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false},
+                                    {false, false, false, false, false, false, false, false}
+                                };
+            object actualArray = schritt(startArray);
 
             Assert.AreEqual(actualArray, expectedArray);
         }
 
         private object schritt(bool[,] startArray)
         {
-            if (startArray[0, 0])
+            bool[,] cloneArray = (bool[,])startArray.Clone();
+
+            for (int y = 0; y < cloneArray.GetLength(1); y++)
             {
-                return new bool[,]
+                for (int x = 0; x < cloneArray.GetLength(0); x++)
                 {
-                    {true, true, false, false, false, false, false, false},
-                    {true, false, false, false, false, false, false, false},
-                    {false, false, false, false, false, false, false, false},
-                    {false, false, false, false, false, false, false, false}
-                };
+                    int retVal = ZaehleLebendeNachbarn(startArray, x, y);
+
+                    if (startArray[x, y])
+                    {
+                        // lebende Zelle :)
+                        if (retVal < 2)
+                            cloneArray[x, y] = false;
+                    }
+
+                }
             }
 
-            return new bool[,]
-                             {
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false},
-                                 {false, false, false, false, false, false, false, false}
-                             };
+            return cloneArray;
         }
 
         /// <summary>
-        /// (-1,-1), (0,-1), (1,-1)
-        /// (-1, 0), (0, 0), (1, 0)
-        /// (-1, 1), (0, 1), (1, 1)
+        ///     (-1,-1), (0,-1), (1,-1)
+        ///     (-1, 0), (0, 0), (1, 0)
+        ///     (-1, 1), (0, 1), (1, 1)
         /// </summary>
         private int ZaehleLebendeNachbarn(bool[,] array, int posX, int posY)
         {
-            var n = 0;
-            if (posX > 0 && posY > 0 && array[posX - 1, posY - 1])
+            return InhaltAnPosition(array, posX - 1, posY - 1) +
+                   InhaltAnPosition(array, posX - 1, posY) +
+                   InhaltAnPosition(array, posX - 1, posY + 1) +
+                   InhaltAnPosition(array, posX, posY - 1) +
+                   InhaltAnPosition(array, posX, posY + 1) +
+                   InhaltAnPosition(array, posX + 1, posY - 1) +
+                   InhaltAnPosition(array, posX + 1, posY) +
+                   InhaltAnPosition(array, posX + 1, posY + 1);
+        }
+
+        private int InhaltAnPosition(bool[,] array, int posX, int posY)
+        {
+            if (posX < 0 || posY < 0 || posX >= array.GetLength(0) || posY >= array.GetLength(1))
             {
-                n++;
+                return 0;
             }
-            return n;
+            else if (array[posX, posY])
+            {
+                return 1;
+            }
+            return 0;
         }
     }
 }
